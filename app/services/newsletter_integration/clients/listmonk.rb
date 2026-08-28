@@ -32,7 +32,8 @@ module NewsletterIntegration
         response = http.request(request)
         return response if response.is_a?(Net::HTTPSuccess)
 
-        raise Error, "listmonk API returned HTTP #{response.code}: #{response.body.to_s.truncate(500)}"
+        raise Error,
+              "listmonk API returned HTTP #{response.code}: #{response.body.to_s.truncate(500)}"
       rescue Net::OpenTimeout, Net::ReadTimeout, Timeout::Error => e
         raise Error, "listmonk API request timed out: #{e.message}"
       rescue SocketError, Errno::ECONNREFUSED, Errno::ECONNRESET => e
