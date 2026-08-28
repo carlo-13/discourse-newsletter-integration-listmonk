@@ -82,7 +82,10 @@ describe NewsletterIntegration::Syncers::Listmonk do
 
       syncer.sync
 
-      expect(WebMock).not_to have_requested(:put, "https://listmonk.example.com/api/subscribers/lists")
+      expect(WebMock).not_to have_requested(
+        :put,
+        "https://listmonk.example.com/api/subscribers/lists",
+      )
     end
 
     it "uses unconfirmed status when preconfirmation is disabled" do
@@ -107,7 +110,11 @@ describe NewsletterIntegration::Syncers::Listmonk do
 
     it "raises a useful error when listmonk rejects the credentials" do
       subscription.update!(active: true)
-      query = URI.encode_www_form(query: "subscribers.email = '#{subscription.user.email.downcase}'", per_page: 1)
+      query =
+        URI.encode_www_form(
+          query: "subscribers.email = '#{subscription.user.email.downcase}'",
+          per_page: 1,
+        )
       stub_request(:get, "https://listmonk.example.com/api/subscribers?#{query}").to_return(
         status: 401,
         body: { message: "unauthorized" }.to_json,
@@ -121,7 +128,11 @@ describe NewsletterIntegration::Syncers::Listmonk do
 
     it "raises a useful error on a listmonk server error" do
       subscription.update!(active: true)
-      query = URI.encode_www_form(query: "subscribers.email = '#{subscription.user.email.downcase}'", per_page: 1)
+      query =
+        URI.encode_www_form(
+          query: "subscribers.email = '#{subscription.user.email.downcase}'",
+          per_page: 1,
+        )
       stub_request(:get, "https://listmonk.example.com/api/subscribers?#{query}").to_return(
         status: 500,
         body: "server error",
@@ -135,7 +146,11 @@ describe NewsletterIntegration::Syncers::Listmonk do
 
     it "wraps network timeouts in a listmonk error" do
       subscription.update!(active: true)
-      query = URI.encode_www_form(query: "subscribers.email = '#{subscription.user.email.downcase}'", per_page: 1)
+      query =
+        URI.encode_www_form(
+          query: "subscribers.email = '#{subscription.user.email.downcase}'",
+          per_page: 1,
+        )
       stub_request(:get, "https://listmonk.example.com/api/subscribers?#{query}").to_timeout
 
       expect { syncer.sync }.to raise_error(
@@ -156,7 +171,8 @@ describe NewsletterIntegration::Syncers::Listmonk do
   end
 
   def stub_listmonk_subscriber_lookup(user, results:)
-    query = URI.encode_www_form(query: "subscribers.email = '#{user.email.downcase}'", per_page: 1)
+    query =
+      URI.encode_www_form(query: "subscribers.email = '#{user.email.downcase}'", per_page: 1)
     stub_request(:get, "https://listmonk.example.com/api/subscribers?#{query}").with(
       headers: listmonk_headers,
     ).to_return(status: 200, body: { data: { results: results } }.to_json)
