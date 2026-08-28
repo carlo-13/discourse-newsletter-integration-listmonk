@@ -75,10 +75,10 @@ describe Jobs::NewsletterIntegration::SubscriptionSync do
           per_page: 1,
         )
         stub =
-          stub_request(
-            :get,
-            "https://listmonk.example.com/api/subscribers?#{query}",
-          ).to_return(status: 200, body: { data: { results: [] } }.to_json)
+          stub_request(:get, "https://listmonk.example.com/api/subscribers?#{query}").to_return(
+            status: 200,
+            body: { data: { results: [] } }.to_json,
+          )
 
         described_class.new.execute(
           {
