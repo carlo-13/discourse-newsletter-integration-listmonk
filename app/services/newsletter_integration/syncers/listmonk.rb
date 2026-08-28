@@ -10,7 +10,7 @@ module NewsletterIntegration
 
         if subscriber
           update_list_membership(subscriber["id"], action: "add", status: subscription_status)
-          send_optin!(subscriber["id"]) unless preconfirm_subscriptions?
+          send_optin!(subscriber["id"]) if !preconfirm_subscriptions?
         else
           client.request(
             verb: "POST",
@@ -32,7 +32,7 @@ module NewsletterIntegration
 
       def unsubscribe!
         subscriber = find_subscriber
-        return unless subscriber
+        return if !subscriber
 
         update_list_membership(subscriber["id"], action: "unsubscribe")
       end
@@ -52,7 +52,11 @@ module NewsletterIntegration
       end
 
       def send_optin!(subscriber_id)
-        client.request(verb: "POST", path: "api/subscribers/#{subscriber_id}/optin", body: {})
+        client.request(
+          verb: "POST",
+          path: "api/subscribers/#{subscriber_id}/optin",
+          body: {},
+        )
       end
 
       def update_list_membership(subscriber_id, action:, status: nil)
