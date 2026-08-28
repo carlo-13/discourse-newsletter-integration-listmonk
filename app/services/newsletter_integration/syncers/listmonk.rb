@@ -10,7 +10,7 @@ module NewsletterIntegration
 
         if subscriber
           update_list_membership(subscriber["id"], action: "add", status: subscription_status)
-          send_optin!(subscriber["id"]) if !preconfirm_subscriptions?
+          send_optin!(subscriber["id"]) unless preconfirm_subscriptions?
         else
           client.request(
             verb: "POST",
@@ -32,7 +32,7 @@ module NewsletterIntegration
 
       def unsubscribe!
         subscriber = find_subscriber
-        return if !subscriber
+        return unless subscriber
 
         update_list_membership(subscriber["id"], action: "unsubscribe")
       end
