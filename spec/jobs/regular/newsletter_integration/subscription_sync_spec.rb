@@ -70,10 +70,11 @@ describe Jobs::NewsletterIntegration::SubscriptionSync do
 
       it "uses the listmonk syncer" do
         subscription.update!(active: false)
-        query = URI.encode_www_form(
-          query: "subscribers.email = '#{subscription.user.email.downcase}'",
-          per_page: 1,
-        )
+        query =
+          URI.encode_www_form(
+            query: "subscribers.email = '#{subscription.user.email.downcase}'",
+            per_page: 1,
+          )
         stub =
           stub_request(:get, "https://listmonk.example.com/api/subscribers?#{query}").to_return(
             status: 200,

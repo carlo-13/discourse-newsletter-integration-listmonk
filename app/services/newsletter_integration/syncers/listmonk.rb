@@ -52,19 +52,11 @@ module NewsletterIntegration
       end
 
       def send_optin!(subscriber_id)
-        client.request(
-          verb: "POST",
-          path: "api/subscribers/#{subscriber_id}/optin",
-          body: {},
-        )
+        client.request(verb: "POST", path: "api/subscribers/#{subscriber_id}/optin", body: {})
       end
 
       def update_list_membership(subscriber_id, action:, status: nil)
-        body = {
-          ids: [subscriber_id],
-          action: action,
-          target_list_ids: [list_id],
-        }
+        body = { ids: [subscriber_id], action: action, target_list_ids: [list_id] }
         body[:status] = status if status
 
         client.request(verb: "PUT", path: "api/subscribers/lists", body: body)

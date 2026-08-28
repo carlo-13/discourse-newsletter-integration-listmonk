@@ -10,9 +10,7 @@ describe NewsletterIntegration::Syncers::Listmonk do
     )
   end
 
-  before do
-    configure_listmonk_settings
-  end
+  before { configure_listmonk_settings }
 
   describe "#sync" do
     it "creates and subscribes a subscriber that does not exist" do
@@ -46,12 +44,7 @@ describe NewsletterIntegration::Syncers::Listmonk do
       update_stub =
         stub_request(:put, "https://listmonk.example.com/api/subscribers/lists").with(
           headers: listmonk_headers,
-          body: {
-            ids: [123],
-            action: "add",
-            target_list_ids: [42],
-            status: "confirmed",
-          }.to_json,
+          body: { ids: [123], action: "add", target_list_ids: [42], status: "confirmed" }.to_json,
         ).to_return(status: 200, body: { data: true }.to_json)
 
       syncer.sync
@@ -65,11 +58,7 @@ describe NewsletterIntegration::Syncers::Listmonk do
       update_stub =
         stub_request(:put, "https://listmonk.example.com/api/subscribers/lists").with(
           headers: listmonk_headers,
-          body: {
-            ids: [123],
-            action: "unsubscribe",
-            target_list_ids: [42],
-          }.to_json,
+          body: { ids: [123], action: "unsubscribe", target_list_ids: [42] }.to_json,
         ).to_return(status: 200, body: { data: true }.to_json)
 
       syncer.sync
@@ -171,8 +160,7 @@ describe NewsletterIntegration::Syncers::Listmonk do
   end
 
   def stub_listmonk_subscriber_lookup(user, results:)
-    query =
-      URI.encode_www_form(query: "subscribers.email = '#{user.email.downcase}'", per_page: 1)
+    query = URI.encode_www_form(query: "subscribers.email = '#{user.email.downcase}'", per_page: 1)
     stub_request(:get, "https://listmonk.example.com/api/subscribers?#{query}").with(
       headers: listmonk_headers,
     ).to_return(status: 200, body: { data: { results: results } }.to_json)
