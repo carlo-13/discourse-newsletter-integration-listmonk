@@ -42,6 +42,18 @@ This fork adds listmonk as an alternative newsletter provider. Select `listmonk`
 The provider creates subscribers when necessary, adds existing subscribers to the configured list, and marks the list membership as unsubscribed when a user opts out in Discourse. Mailchimp remains the default provider for backward compatibility.
 
 
+### Tested listmonk versions
+
+Compatibility checks were performed on **listmonk v6.2.0 and v7.0.0-beta.2** on November 14, 2026, using local Docker containers (Linux ARM64) and PostgreSQL 17.6.
+
+- API authentication and subscriber/list/campaign reads worked on both versions, including after upgrading the same database from v6.2.0 to v7.0.0-beta.2 and restarting it.
+- On v7.0.0-beta.2, the provider's exact API requests were replayed successfully for subscriber lookup and creation, subscription, resubscription, and unsubscription from the target list without affecting another list. Setting an existing subscription to `unconfirmed` also passed.
+- Migration checks preserved multiple lists, subscribers, subscription statuses, campaigns, templates, users, and roles. The same API token and administrator TOTP secret continued to work after migration.
+
+The API user needs subscriber read/manage permissions, `subscribers:sql_query` for the provider's email lookup, and permission to manage the target list.
+
+These checks used synthetic data and direct HTTP requests, not a full Discourse end-to-end test. Actual SMTP delivery and double opt-in email delivery were not tested. The v7 result applies specifically to **v7.0.0-beta.2**, not to every v7 beta or future release.
+
 ### listmonk reliability and double opt-in
 
 The listmonk client uses a 5 second connection timeout and a 15 second read timeout so a failing listmonk instance does not leave a Sidekiq worker blocked indefinitely.
